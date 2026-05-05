@@ -43,6 +43,27 @@
                 </div>
 
                 <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Gameplay Trailer (Video)</label>
+                    <input type="file" name="trailer_video" accept="video/mp4,video/webm" class="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-neon-blue/20 file:text-neon-cyan file:cursor-pointer">
+                    <p class="mt-1 text-xs text-gray-500">MP4, WebM. Max 50MB. Format horizontal.</p>
+                    @error('trailer_video')
+                        <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Gallery Photos (Max 5)</label>
+                    <input type="file" name="gallery_photos[]" multiple accept="image/jpeg,image/png,image/jpg" class="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-neon-blue/20 file:text-neon-cyan file:cursor-pointer">
+                    <p class="mt-1 text-xs text-gray-500">JPEG, PNG, JPG. Max 5 files. Max 2MB per file. Format horizontal.</p>
+                    @error('gallery_photos')
+                        <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+                    @enderror
+                    @error('gallery_photos.*')
+                        <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Game File (.zip)</label>
                     <input type="file" id="gameFileInput" name="game_file" accept=".zip" class="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-neon-blue/20 file:text-neon-cyan file:cursor-pointer">
                     <p class="mt-1 text-xs text-gray-500">Upload a .zip file containing your game folder + .exe file. Max 200MB.</p>

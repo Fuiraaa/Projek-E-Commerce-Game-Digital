@@ -47,6 +47,9 @@ class GameController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'game_file' => ['nullable', 'file', 'mimes:zip', 'max:204800'],
+            'gallery_photos.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'gallery_photos' => ['nullable', 'array', 'max:5'],
+            'trailer_video' => ['nullable', 'mimetypes:video/mp4,video/webm', 'max:51200'],
         ]);
 
         $slug = Str::slug($validated['title']);
@@ -68,6 +71,18 @@ class GameController extends Controller
 
         if ($request->hasFile('game_file')) {
             $validated['game_file'] = $request->file('game_file')->store('games', 'public');
+        }
+
+        if ($request->hasFile('trailer_video')) {
+            $validated['trailer_video'] = $request->file('trailer_video')->store('trailers', 'public');
+        }
+
+        if ($request->hasFile('gallery_photos')) {
+            $photos = [];
+            foreach ($request->file('gallery_photos') as $photo) {
+                $photos[] = $photo->store('galleries', 'public');
+            }
+            $validated['gallery_photos'] = $photos;
         }
 
         Game::create($validated);
@@ -104,6 +119,9 @@ class GameController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'game_file' => ['nullable', 'file', 'mimes:zip', 'max:204800'],
+            'gallery_photos.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'gallery_photos' => ['nullable', 'array', 'max:5'],
+            'trailer_video' => ['nullable', 'mimetypes:video/mp4,video/webm', 'max:51200'],
         ]);
 
         if ($request->hasFile('cover_image')) {
@@ -118,6 +136,26 @@ class GameController extends Controller
                 Storage::disk('public')->delete($game->game_file);
             }
             $validated['game_file'] = $request->file('game_file')->store('games', 'public');
+        }
+
+        if ($request->hasFile('trailer_video')) {
+            if ($game->trailer_video) {
+                Storage::disk('public')->delete($game->trailer_video);
+            }
+            $validated['trailer_video'] = $request->file('trailer_video')->store('trailers', 'public');
+        }
+
+        if ($request->hasFile('gallery_photos')) {
+            if ($game->gallery_photos) {
+                foreach ($game->gallery_photos as $oldPhoto) {
+                    Storage::disk('public')->delete($oldPhoto);
+                }
+            }
+            $photos = [];
+            foreach ($request->file('gallery_photos') as $photo) {
+                $photos[] = $photo->store('galleries', 'public');
+            }
+            $validated['gallery_photos'] = $photos;
         }
 
         if ($validated['title'] !== $game->title) {
@@ -158,6 +196,16 @@ class GameController extends Controller
 
         if ($game->game_file) {
             Storage::disk('public')->delete($game->game_file);
+        }
+
+        if ($game->trailer_video) {
+            Storage::disk('public')->delete($game->trailer_video);
+        }
+
+        if ($game->gallery_photos) {
+            foreach ($game->gallery_photos as $oldPhoto) {
+                Storage::disk('public')->delete($oldPhoto);
+            }
         }
 
         $game->delete();

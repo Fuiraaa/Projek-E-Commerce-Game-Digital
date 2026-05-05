@@ -49,6 +49,39 @@
                 </div>
 
                 <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Gameplay Trailer (Video)</label>
+                    @if($game->trailer_video)
+                        <div class="mb-3">
+                            <video src="{{ asset('storage/' . $game->trailer_video) }}" controls class="w-64 rounded-lg"></video>
+                        </div>
+                    @endif
+                    <input type="file" name="trailer_video" accept="video/mp4,video/webm" class="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-neon-blue/20 file:text-neon-cyan file:cursor-pointer">
+                    <p class="mt-1 text-xs text-gray-500">MP4, WebM. Max 50MB. Leave empty to keep current.</p>
+                    @error('trailer_video')
+                        <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Gallery Photos (Max 5)</label>
+                    @if($game->gallery_photos)
+                        <div class="mb-3 flex flex-wrap gap-2">
+                            @foreach($game->gallery_photos as $photo)
+                                <img src="{{ asset('storage/' . $photo) }}" alt="Gallery photo" class="w-32 h-20 object-cover rounded-lg">
+                            @endforeach
+                        </div>
+                    @endif
+                    <input type="file" name="gallery_photos[]" multiple accept="image/jpeg,image/png,image/jpg" class="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:border-neon-blue focus:ring-1 focus:ring-neon-blue outline-none transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-neon-blue/20 file:text-neon-cyan file:cursor-pointer">
+                    <p class="mt-1 text-xs text-gray-500">JPEG, PNG, JPG. Max 5 files. Max 2MB per file. Leave empty to keep current photos.</p>
+                    @error('gallery_photos')
+                        <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+                    @enderror
+                    @error('gallery_photos.*')
+                        <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Game File (.zip)</label>
                     @if($game->game_file)
                         <p class="mb-2 text-sm text-neon-cyan"><span class="material-icons text-base align-middle">check_circle</span> Current file: {{ Str::slug($game->title) }}.zip</p>

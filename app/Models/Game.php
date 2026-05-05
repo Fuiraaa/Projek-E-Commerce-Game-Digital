@@ -17,12 +17,15 @@ class Game extends Model
         'cover_image',
         'status',
         'game_file',
+        'gallery_photos',
+        'trailer_video',
     ];
 
     protected function casts(): array
     {
         return [
             'price' => 'decimal:2',
+            'gallery_photos' => 'array',
         ];
     }
 

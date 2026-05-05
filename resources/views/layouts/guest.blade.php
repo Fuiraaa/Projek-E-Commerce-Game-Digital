@@ -24,5 +24,8 @@
             {{ $slot }}
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js"></script>
+    <script src="{{ asset('js/page-transition.js') }}"></script>
 </body>
 </html>
