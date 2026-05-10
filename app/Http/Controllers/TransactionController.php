@@ -21,35 +21,29 @@ class TransactionController extends Controller
             return redirect()->back()->with('error', 'You already own this game.');
         }
 
-        $user = auth()->user();
+        $pendingOrder = \App\Models\Order::where('user_id', auth()->id())
+            ->where('payment_status', 'pending')
+            ->first();
 
-        if ($user->wallet_balance < $game->price) {
-            return redirect()->back()->with('error', 'Insufficient wallet balance. Please top up first.');
+        if ($pendingOrder) {
+            return redirect()->route('cart.index')->with('error', 'You have a pending order. Please complete or cancel it first.');
         }
 
-        $platformFee = $game->price * 0.05;
-        $developerEarnings = $game->price - $platformFee;
+        // Instead of immediate purchase, create an Order
+        $order = \App\Models\Order::create([
+            'order_number' => 'ORD-' . strtoupper(Str::random(10)),
+            'user_id' => auth()->id(),
+            'total_price' => $game->price,
+            'payment_status' => 'pending',
+            'approval_status' => 'pending',
+        ]);
 
-        DB::transaction(function () use ($game, $user, $developerEarnings) {
-            $user->decrement('wallet_balance', $game->price);
+        \App\Models\OrderItem::create([
+            'order_id' => $order->id,
+            'game_id' => $game->id,
+            'price' => $game->price,
+        ]);
 
-            $game->developer->increment('wallet_balance', $developerEarnings);
-
-            $transaction = Transaction::create([
-                'user_id' => $user->id,
-                'game_id' => $game->id,
-                'total_price' => $game->price,
-                'status' => 'success',
-            ]);
-
-            Library::create([
-                'user_id' => $user->id,
-                'game_id' => $game->id,
-                'license_key' => Str::uuid(),
-                'purchased_at' => now(),
-            ]);
-        });
-
-        return redirect()->route('library.index')->with('success', 'Purchase successful! Game added to your library.');
+        return redirect()->route('order.pay', $order->order_number);
     }
 }

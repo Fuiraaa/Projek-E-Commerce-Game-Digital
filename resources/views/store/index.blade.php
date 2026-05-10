@@ -20,6 +20,18 @@
                 g.description.toLowerCase().includes(q) ||
                 g.developer.toLowerCase().includes(q)
             );
+        },
+        page: 1,
+        perPage: 8,
+        get paginatedGames() {
+            return this.filteredGames.slice((this.page - 1) * this.perPage, this.page * this.perPage);
+        },
+        get totalPages() { return Math.ceil(this.filteredGames.length / this.perPage); },
+        nextPage() { if (this.page < this.totalPages) { this.page++; window.scrollTo({ top: 300, behavior: 'smooth' }); } },
+        prevPage() { if (this.page > 1) { this.page--; window.scrollTo({ top: 300, behavior: 'smooth' }); } },
+        init() {
+            this.$watch('filter', () => this.page = 1);
+            this.$watch('search', () => this.page = 1);
         }
     }">
         <div class="flex items-center justify-between mb-8">
@@ -54,7 +66,7 @@
                             <div style="width: 40%; position: relative; overflow: hidden;">
                                 <div style="width: 100%; height: 100%; overflow: hidden;">
                                     <template x-if="game.cover">
-                                        <img :src="game.cover" :alt="game.title" :style="hovered ? 'transform: scale(1.05);' : ''" class="transition-transform duration-500" style="width: 100%; height: 100%; object-fit: cover;">
+                                        <img :src="game.cover" :alt="game.title" :style="hovered ? 'transform: scale(1.05);' : 'transform: scale(1);'" class="w-full h-full object-cover transition-transform duration-500">
                                     </template>
                                     <template x-if="!game.cover">
                                         <div style="width: 100%; height: 100%; background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2)); display: flex; align-items: center; justify-content: center;">
@@ -149,34 +161,52 @@
         </div>
 
         <template x-if="filteredGames.length > 0">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <template x-for="game in filteredGames" :key="game.id">
-                    <div class="glass-card glass-card-hover overflow-hidden group transition-all duration-300">
-                        <div class="relative aspect-[4/3] overflow-hidden">
-                            <template x-if="game.cover_image">
-                                <img :src="game.cover_image" :alt="game.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            </template>
-                            <template x-if="!game.cover_image">
-                                <div class="w-full h-full bg-gradient-to-br from-neon-blue/20 to-neon-violet/20 flex items-center justify-center">
-                                    <svg class="w-16 h-16 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <template x-for="game in paginatedGames" :key="game.id">
+                        <div class="glass-card glass-card-hover overflow-hidden group transition-all duration-300">
+                            <div class="relative aspect-[4/3] overflow-hidden">
+                                <template x-if="game.cover_image">
+                                    <img :src="game.cover_image" :alt="game.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                </template>
+                                <template x-if="!game.cover_image">
+                                    <div class="w-full h-full bg-gradient-to-br from-neon-blue/20 to-neon-violet/20 flex items-center justify-center">
+                                        <svg class="w-16 h-16 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    </div>
+                                </template>
+                                <div class="absolute top-3 right-3">
+                                    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-neon-violet/80 text-white backdrop-blur-sm" x-text="'Rp ' + game.price"></span>
                                 </div>
-                            </template>
-                            <div class="absolute top-3 right-3">
-                                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-neon-violet/80 text-white backdrop-blur-sm" x-text="'Rp ' + game.price"></span>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-heading font-semibold text-white text-lg truncate" x-text="game.title"></h3>
+                                <p class="text-gray-400 text-sm mt-1 line-clamp-2" x-text="game.description"></p>
+                                <div class="mt-4 flex items-center justify-between">
+                                    <span class="text-xs text-gray-500" x-text="'by ' + game.developer"></span>
+                                    <a :href="'/store/' + game.slug" class="px-4 py-2 rounded-lg btn-primary text-white text-sm font-medium">
+                                        View Details
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                        <div class="p-4">
-                            <h3 class="font-heading font-semibold text-white text-lg truncate" x-text="game.title"></h3>
-                            <p class="text-gray-400 text-sm mt-1 line-clamp-2" x-text="game.description"></p>
-                            <div class="mt-4 flex items-center justify-between">
-                                <span class="text-xs text-gray-500" x-text="'by ' + game.developer"></span>
-                                <a :href="'/store/' + game.slug" class="px-4 py-2 rounded-lg btn-primary text-white text-sm font-medium">
-                                    View Details
-                                </a>
-                            </div>
-                        </div>
+                    </template>
+                </div>
+
+                <!-- Pagination Buttons -->
+                <div class="mt-8 flex items-center justify-between border-t border-white/5 pt-6" x-show="totalPages > 1">
+                    <p class="text-sm text-gray-400">
+                        Showing <span x-text="(page - 1) * perPage + 1"></span> to <span x-text="Math.min(page * perPage, filteredGames.length)"></span> of <span x-text="filteredGames.length"></span>
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <button @click="prevPage" :disabled="page === 1" :class="page === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neon-blue/20'" class="p-2 rounded-xl bg-white/5 text-neon-cyan border border-neon-blue/30 transition-all flex items-center justify-center">
+                            <span class="material-icons">chevron_left</span>
+                        </button>
+                        <span class="text-sm font-bold text-white px-4"><span x-text="page"></span> / <span x-text="totalPages"></span></span>
+                        <button @click="nextPage" :disabled="page === totalPages" :class="page === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neon-blue/20'" class="p-2 rounded-xl bg-white/5 text-neon-cyan border border-neon-blue/30 transition-all flex items-center justify-center">
+                            <span class="material-icons">chevron_right</span>
+                        </button>
                     </div>
-                </template>
+                </div>
             </div>
         </template>
 
@@ -190,4 +220,7 @@
             </div>
         </template>
     </div>
+    <x-slot name="footer">
+        <x-footer />
+    </x-slot>
 </x-app-layout>

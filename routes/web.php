@@ -48,7 +48,20 @@ Route::middleware(['auth', 'player'])->group(function () {
     Route::post('/checkout/{game:slug}', [TransactionController::class, 'checkout'])->name('checkout');
     Route::get('/download/{game:slug}', [\App\Http\Controllers\GameDownloadController::class, 'download'])->name('game.download');
     Route::get('/launcher', [\App\Http\Controllers\LauncherController::class, 'download'])->name('launcher.download');
+
+    Route::get('/cart', [\App\Http\Controllers\CartController::class, 'index'])->name('cart.index');
+    Route::post('/cart/add/{game:slug}', [\App\Http\Controllers\CartController::class, 'add'])->name('cart.add');
+    Route::delete('/cart/remove/{cart}', [\App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/cart/checkout', [\App\Http\Controllers\CartController::class, 'checkout'])->name('cart.checkout');
+
+    Route::get('/order/{order_number}', [\App\Http\Controllers\OrderController::class, 'pay'])->name('order.pay');
+    Route::post('/order/{order_number}/process', [\App\Http\Controllers\OrderController::class, 'processPayment'])->name('order.process');
+    Route::get('/order/{order_number}/midtrans', [\App\Http\Controllers\OrderController::class, 'midtrans'])->name('order.midtrans');
+    Route::get('/order/{order_number}/success', [\App\Http\Controllers\OrderController::class, 'success'])->name('order.success');
+    Route::delete('/order/{order_number}/cancel', [\App\Http\Controllers\OrderController::class, 'cancel'])->name('order.cancel');
 });
+
+Route::post('/webhook/midtrans', [\App\Http\Controllers\OrderController::class, 'webhook'])->name('webhook.midtrans');
 
 Route::middleware(['auth', 'developer'])->group(function () {
     Route::get('/developer/dashboard', [DeveloperDashboardController::class, 'index'])->name('developer.dashboard');
@@ -71,6 +84,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/users/{user}', [\App\Http\Controllers\Admin\UserManagementController::class, 'show'])->name('admin.users.show');
     Route::post('/admin/users/{user}/toggle-suspend', [\App\Http\Controllers\Admin\UserManagementController::class, 'toggleSuspend'])->name('admin.users.toggle-suspend');
     Route::delete('/admin/users/{user}', [\App\Http\Controllers\Admin\UserManagementController::class, 'destroy'])->name('admin.users.destroy');
+
+    Route::get('/admin/orders', [AdminController::class, 'orders'])->name('admin.orders');
+    Route::post('/admin/orders/{order}/approve', [AdminController::class, 'approveOrder'])->name('admin.approve-order');
+    Route::delete('/admin/orders/{order}', [AdminController::class, 'destroyOrder'])->name('admin.orders.destroy');
 });
 
 require __DIR__.'/auth.php';

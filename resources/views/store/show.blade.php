@@ -106,12 +106,20 @@
                                         Already in Library
                                     </button>
                                 @else
-                                    <form action="{{ route('checkout', $game->slug) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="w-full btn-primary py-3 rounded-xl text-white font-medium hover:scale-105 transition-transform duration-300">
-                                            Buy Now
-                                        </button>
-                                    </form>
+                                    <div class="flex gap-2">
+                                        <form action="{{ route('checkout', $game->slug) }}" method="POST" class="flex-1">
+                                            @csrf
+                                            <button type="submit" class="w-full btn-primary py-3 rounded-xl text-white font-medium hover:scale-105 transition-transform duration-300">
+                                                Buy Now
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('cart.add', $game->slug) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="h-full px-4 rounded-xl border border-white/20 bg-white/5 hover:bg-neon-cyan/20 hover:text-neon-cyan hover:border-neon-cyan text-gray-300 transition-all flex items-center justify-center">
+                                                <span class="material-icons">shopping_cart</span>
+                                            </button>
+                                        </form>
+                                    </div>
                                 @endif
                             @else
                                 <p class="text-gray-500 text-sm text-center">Login as a player to purchase this game.</p>

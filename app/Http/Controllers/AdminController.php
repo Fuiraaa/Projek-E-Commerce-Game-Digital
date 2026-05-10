@@ -185,4 +185,60 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Game rejected.');
     }
+
+    public function orders(): View
+    {
+        $orders = \App\Models\Order::with(['user', 'items.game'])
+            ->where('payment_status', 'paid')
+            ->latest()
+            ->get();
+
+        return view('admin.orders.index', compact('orders'));
+    }
+
+    public function approveOrder(\App\Models\Order $order): RedirectResponse
+    {
+        if ($order->payment_status !== 'paid' || $order->approval_status !== 'pending') {
+            return back()->with('error', 'Order cannot be approved.');
+        }
+
+        DB::transaction(function() use ($order) {
+            $order->update(['approval_status' => 'approved']);
+            
+            foreach ($order->items as $item) {
+                $game = $item->game;
+                $platformFee = $item->price * 0.05;
+                $developerEarnings = $item->price - $platformFee;
+                
+                $game->developer->increment('wallet_balance', $developerEarnings);
+                
+                Transaction::create([
+                    'user_id' => $order->user_id,
+                    'game_id' => $game->id,
+                    'total_price' => $item->price,
+                    'status' => 'success',
+                ]);
+                
+                \App\Models\Library::firstOrCreate(
+                    [
+                        'user_id' => $order->user_id,
+                        'game_id' => $game->id,
+                    ],
+                    [
+                        'license_key' => \Illuminate\Support\Str::uuid(),
+                        'purchased_at' => now(),
+                    ]
+                );
+            }
+        });
+
+        return back()->with('success', 'Order approved. Games added to player library.');
+    }
+
+    public function destroyOrder(\App\Models\Order $order): RedirectResponse
+    {
+        $order->delete();
+
+        return back()->with('success', 'Order deleted successfully.');
+    }
 }

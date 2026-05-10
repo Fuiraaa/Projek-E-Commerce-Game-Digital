@@ -26,7 +26,7 @@
                 <div x-show="playMethod === 'launcher'" x-transition class="p-3 rounded-lg bg-white/5 border border-neon-violet/20">
                     <p class="text-xs font-semibold text-neon-violet mb-2 flex items-center gap-1">
                         <span class="material-icons text-sm">rocket_launch</span>
-                        Using Nebula Launcher (Recommended)
+                        Using Neboostla Launcher (Recommended)
                     </p>
                     <ol class="space-y-1.5 text-sm text-gray-300">
                         <li class="flex items-start gap-2">
@@ -35,7 +35,7 @@
                         </li>
                         <li class="flex items-start gap-2">
                             <span class="flex-shrink-0 w-5 h-5 rounded-full bg-neon-violet/20 text-neon-violet flex items-center justify-center text-xs font-bold">2</span>
-                            <span><strong class="text-white">Download & Install</strong> the Nebula Launcher (click Play Now).</span>
+                            <span><strong class="text-white">Download & Install</strong> the Neboostla Launcher (click Play Now).</span>
                         </li>
                         <li class="flex items-start gap-2">
                             <span class="flex-shrink-0 w-5 h-5 rounded-full bg-neon-violet/20 text-neon-violet flex items-center justify-center text-xs font-bold">3</span>
@@ -121,7 +121,7 @@
         @endif
     </div>
 
-    <!-- Nebula Launcher Modal -->
+    <!-- Neboostla Launcher Modal -->
     <div id="launcherModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60">
         <div class="glass-card w-full max-w-md mx-4 p-6 relative" onclick="event.stopPropagation()">
             <button onclick="closeLauncherModal()" class="absolute top-4 right-4 p-1 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
@@ -133,13 +133,13 @@
                     <span class="material-icons text-white text-2xl">rocket_launch</span>
                 </div>
                 <div>
-                    <h3 class="font-heading text-xl font-bold text-white">Nebula Launcher</h3>
+                    <h3 class="font-heading text-xl font-bold text-white">Neboostla Launcher</h3>
                     <p class="text-xs text-gray-400">Required to play games</p>
                 </div>
             </div>
 
             <p class="text-sm text-gray-300 mb-4">
-                To play <strong class="text-neon-cyan" id="launcherGameTitle"></strong>, you need to install the Nebula Launcher.
+                To play <strong class="text-neon-cyan" id="launcherGameTitle"></strong>, you need to install the Neboostla Launcher.
             </p>
 
             <div class="space-y-3 mb-6">
@@ -149,7 +149,7 @@
                     </span>
                     <div>
                         <p class="text-sm font-medium text-white">Download the Launcher</p>
-                        <p class="text-xs text-gray-400">Get the Nebula Launcher installer</p>
+                        <p class="text-xs text-gray-400">Get the Neboostla Launcher installer</p>
                     </div>
                 </div>
                 <div class="flex items-start gap-3 p-3 rounded-lg bg-white/5">

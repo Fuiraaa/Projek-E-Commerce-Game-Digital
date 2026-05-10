@@ -5,18 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Nebula Store') }}</title>
+    <title>{{ config('app.name', 'Neboostla') }}</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body class="font-body antialiased bg-dark-bg text-gray-200">
+<body class="font-body antialiased bg-dark-bg text-gray-200 scrollbar-hide">
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-10">
-        <div class="mb-8">
+        <div class="mb-8 flex justify-center">
             <a href="/" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-neon-blue to-neon-violet flex items-center justify-center">
-                    <span class="text-white font-heading font-bold text-lg">N</span>
-                </div>
-                <span class="font-heading font-bold text-xl text-white neon-text">Nebula Store</span>
+                <img src="{{ asset('images/logo.png') }}" alt="Neboostla Logo" class="w-10 h-10 rounded-xl object-cover shadow-[0_0_20px_rgba(0,240,255,0.3)]">
+                <span class="font-heading font-bold text-xl text-white neon-text">Neboostla</span>
             </a>
         </div>
 

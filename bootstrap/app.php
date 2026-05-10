@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'developer' => \App\Http\Middleware\IsDeveloper::class,
             'player' => \App\Http\Middleware\IsPlayer::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            '/webhook/midtrans',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

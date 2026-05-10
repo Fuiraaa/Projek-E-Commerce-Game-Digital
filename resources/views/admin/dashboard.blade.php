@@ -78,29 +78,54 @@
         <h2 class="font-heading text-lg font-semibold text-gray-400 mb-3">Developers</h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <!-- Pending Developers -->
-            <div class="glass-card p-6">
+            <div class="glass-card p-6" x-data="{
+                items: {{ Js::from($pendingDevelopers) }},
+                page: 1,
+                perPage: 3,
+                get paginatedItems() { return this.items.slice((this.page - 1) * this.perPage, this.page * this.perPage); },
+                get totalPages() { return Math.ceil(this.items.length / this.perPage); },
+                nextPage() { if (this.page < this.totalPages) this.page++; },
+                prevPage() { if (this.page > 1) this.page--; }
+            }">
                 <h2 class="font-heading text-xl font-bold text-white mb-4">Pending Developers</h2>
-                @if($pendingDevelopers->count() > 0)
-                    <div class="space-y-3">
-                        @foreach($pendingDevelopers as $dev)
-                            <div class="flex items-center justify-between p-3 rounded-lg bg-white/5">
-                                <div>
-                                    <p class="font-medium text-white">{{ $dev->name }}</p>
-                                    <p class="text-sm text-gray-400">{{ $dev->email }}</p>
+                <template x-if="items.length > 0">
+                    <div>
+                        <div class="space-y-3">
+                            <template x-for="dev in paginatedItems" :key="dev.id">
+                                <div class="flex items-center justify-between p-3 rounded-lg bg-white/5">
+                                    <div>
+                                        <p class="font-medium text-white" x-text="dev.name"></p>
+                                        <p class="text-sm text-gray-400" x-text="dev.email"></p>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <form :action="'{{ url('admin/verify-developer') }}/' + dev.id" method="POST">
+                                            @csrf
+                                            <button type="submit" class="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 text-sm">Verify</button>
+                                        </form>
+                                        <button @click="rejectModal = true; rejectUserId = dev.id" class="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 text-sm">Reject</button>
+                                    </div>
                                 </div>
-                                <div class="flex gap-2">
-                                    <form action="{{ route('admin.verify-developer', $dev) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 text-sm">Verify</button>
-                                    </form>
-                                    <button @click="rejectModal = true; rejectUserId = {{ $dev->id }}" class="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 text-sm">Reject</button>
-                                </div>
+                            </template>
+                        </div>
+                        <div class="mt-4 flex items-center justify-between border-t border-white/5 pt-4" x-show="totalPages > 1">
+                            <p class="text-xs text-gray-400">
+                                Showing <span x-text="(page - 1) * perPage + 1"></span> to <span x-text="Math.min(page * perPage, items.length)"></span> of <span x-text="items.length"></span>
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <button @click="prevPage" :disabled="page === 1" :class="page === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neon-blue/20'" class="p-1.5 rounded-lg bg-white/5 text-neon-cyan border border-neon-blue/30 transition-all flex items-center justify-center">
+                                    <span class="material-icons text-sm">chevron_left</span>
+                                </button>
+                                <span class="text-xs font-bold text-white px-2"><span x-text="page"></span> / <span x-text="totalPages"></span></span>
+                                <button @click="nextPage" :disabled="page === totalPages" :class="page === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neon-blue/20'" class="p-1.5 rounded-lg bg-white/5 text-neon-cyan border border-neon-blue/30 transition-all flex items-center justify-center">
+                                    <span class="material-icons text-sm">chevron_right</span>
+                                </button>
                             </div>
-                        @endforeach
+                        </div>
                     </div>
-                @else
+                </template>
+                <template x-if="items.length === 0">
                     <p class="text-gray-500 text-center py-4">No pending developers.</p>
-                @endif
+                </template>
             </div>
 
             <!-- Rejected Developers -->
@@ -131,37 +156,62 @@
         <h2 class="font-heading text-lg font-semibold text-gray-400 mb-3">Games</h2>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <!-- Pending Games -->
-            <div class="glass-card p-6">
+            <div class="glass-card p-6" x-data="{
+                items: {{ Js::from($pendingGames) }},
+                page: 1,
+                perPage: 3,
+                get paginatedItems() { return this.items.slice((this.page - 1) * this.perPage, this.page * this.perPage); },
+                get totalPages() { return Math.ceil(this.items.length / this.perPage); },
+                nextPage() { if (this.page < this.totalPages) this.page++; },
+                prevPage() { if (this.page > 1) this.page--; }
+            }">
                 <h2 class="font-heading text-xl font-bold text-white mb-4">Pending Games</h2>
-                @if($pendingGames->count() > 0)
-                    <div class="space-y-3">
-                        @foreach($pendingGames as $game)
-                            <div class="flex items-center justify-between p-3 rounded-lg bg-white/5">
-                                <div>
-                                    <p class="font-medium text-white">{{ $game->title }}</p>
-                                    <p class="text-sm text-gray-400">by {{ $game->developer->name }}</p>
-                                    @if($game->game_file)
-                                        <span class="text-xs text-green-400 flex items-center gap-0.5 mt-0.5">
-                                            <span class="material-icons text-xs">folder_zip</span> File attached
-                                        </span>
-                                    @endif
+                <template x-if="items.length > 0">
+                    <div>
+                        <div class="space-y-3">
+                            <template x-for="game in paginatedItems" :key="game.id">
+                                <div class="flex items-center justify-between p-3 rounded-lg bg-white/5">
+                                    <div>
+                                        <p class="font-medium text-white" x-text="game.title"></p>
+                                        <p class="text-sm text-gray-400">by <span x-text="game.developer ? game.developer.name : 'Unknown'"></span></p>
+                                        <template x-if="game.game_file">
+                                            <span class="text-xs text-green-400 flex items-center gap-0.5 mt-0.5">
+                                                <span class="material-icons text-xs">folder_zip</span> File attached
+                                            </span>
+                                        </template>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <form :action="'{{ url('admin/approve-game') }}/' + game.id" method="POST">
+                                            @csrf
+                                            <button type="submit" class="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 text-sm">Approve</button>
+                                        </form>
+                                        <form :action="'{{ url('admin/reject-game') }}/' + game.id" method="POST">
+                                            @csrf
+                                            <button type="submit" class="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 text-sm">Reject</button>
+                                        </form>
+                                    </div>
                                 </div>
-                                <div class="flex gap-2">
-                                    <form action="{{ route('admin.approve-game', $game) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 text-sm">Approve</button>
-                                    </form>
-                                    <form action="{{ route('admin.reject-game', $game) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 text-sm">Reject</button>
-                                    </form>
-                                </div>
+                            </template>
+                        </div>
+                        <div class="mt-4 flex items-center justify-between border-t border-white/5 pt-4" x-show="totalPages > 1">
+                            <p class="text-xs text-gray-400">
+                                Showing <span x-text="(page - 1) * perPage + 1"></span> to <span x-text="Math.min(page * perPage, items.length)"></span> of <span x-text="items.length"></span>
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <button @click="prevPage" :disabled="page === 1" :class="page === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neon-blue/20'" class="p-1.5 rounded-lg bg-white/5 text-neon-cyan border border-neon-blue/30 transition-all flex items-center justify-center">
+                                    <span class="material-icons text-sm">chevron_left</span>
+                                </button>
+                                <span class="text-xs font-bold text-white px-2"><span x-text="page"></span> / <span x-text="totalPages"></span></span>
+                                <button @click="nextPage" :disabled="page === totalPages" :class="page === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neon-blue/20'" class="p-1.5 rounded-lg bg-white/5 text-neon-cyan border border-neon-blue/30 transition-all flex items-center justify-center">
+                                    <span class="material-icons text-sm">chevron_right</span>
+                                </button>
                             </div>
-                        @endforeach
+                        </div>
                     </div>
-                @else
+                </template>
+                <template x-if="items.length === 0">
                     <p class="text-gray-500 text-center py-4">No pending games.</p>
-                @endif
+                </template>
             </div>
 
             <!-- Rejected Games -->

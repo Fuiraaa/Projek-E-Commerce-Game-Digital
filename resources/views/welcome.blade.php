@@ -4,7 +4,7 @@
         <div class="relative overflow-hidden rounded-2xl glass-card p-8 lg:p-12 mb-8">
             <div class="absolute inset-0 bg-gradient-to-r from-neon-blue/10 to-neon-violet/10"></div>
             <div class="relative z-10">
-                <h1 class="font-heading text-4xl lg:text-5xl font-bold text-white neon-text">Welcome to Nebula Store</h1>
+                <h1 class="font-heading text-4xl lg:text-5xl font-bold text-white neon-text">Welcome to Neboostla</h1>
                 <p class="mt-4 text-lg text-gray-400 max-w-2xl">Discover and purchase the best digital games. Build your ultimate game library with exclusive titles from indie developers.</p>
                 <div class="mt-8 flex flex-wrap gap-4">
                     <a href="{{ route('store.index') }}" class="btn-primary px-6 py-3 rounded-xl text-white font-medium">
@@ -36,4 +36,7 @@
             @endif
         </div>
     </div>
+    <x-slot name="footer">
+        <x-footer />
+    </x-slot>
 </x-app-layout>

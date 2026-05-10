@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Nebula Store') }}</title>
+    <title>{{ config('app.name', 'Neboostla') }}</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -44,7 +49,7 @@
         }
     </style>
 </head>
-<body class="font-body antialiased bg-dark-bg text-gray-200">
+<body class="font-body antialiased bg-dark-bg text-gray-200 scrollbar-hide">
     <div x-data="{ sidebarOpen: false, sidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true' }" 
          x-init="$watch('sidebarCollapsed', val => { 
              localStorage.setItem('sidebarCollapsed', val);
@@ -57,12 +62,12 @@
         <!-- Sidebar -->
         <aside :class="{ 'desktop-sidebar-visible': sidebarOpen, 'sidebar-collapsed-mini': sidebarCollapsed }" class="fixed desktop-sidebar-static top-0 flex-shrink-0 inset-y-0 left-0 z-50 w-64 h-screen bg-[#0b1120] border-r border-white/5 flex flex-col transition-all duration-300 mobile-sidebar-hidden">
             <!-- Logo -->
-            <div class="h-16 flex items-center px-4 border-b border-white/5">
+            <div class="h-16 flex items-center px-4 border-b border-white/5 overflow-hidden">
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-neon-blue to-neon-violet flex items-center justify-center">
-                        <span class="text-white font-heading font-bold text-sm">N</span>
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-8 h-8 rounded-lg object-cover flex-shrink-0">
+                    <div :class="sidebarCollapsed ? 'lg:w-0 lg:opacity-0' : 'lg:w-32 lg:opacity-100'" class="transition-all duration-300 overflow-hidden flex items-center">
+                        <span class="font-heading font-bold text-lg text-white neon-text whitespace-nowrap">Neboostla</span>
                     </div>
-                    <span :class="sidebarCollapsed ? 'lg:hidden' : ''" class="font-heading font-bold text-lg text-white neon-text">Nebula Store</span>
                 </a>
             </div>
 
@@ -73,6 +78,7 @@
                 @auth
                     @if(auth()->user()->isPlayer())
                         <x-sidebar-item href="{{ route('library.index') }}" icon="<i class='material-icons'>menu_book</i>" :active="request()->routeIs('library.*')">Library</x-sidebar-item>
+                        <x-sidebar-item href="{{ route('cart.index') }}" icon="<i class='material-icons'>shopping_cart</i>" :active="request()->routeIs('cart.*')">Cart</x-sidebar-item>
                     @endif
 
                     @if(auth()->user()->isDeveloper())
@@ -87,7 +93,7 @@
 
                     @if(auth()->user()->isAdmin())
                         <x-sidebar-item href="{{ route('admin.dashboard') }}" icon="<i class='material-icons'>admin_panel_settings</i>" :active="request()->routeIs('admin.dashboard')">Admin Panel</x-sidebar-item>
-
+                        <x-sidebar-item href="{{ route('admin.orders') }}" icon="<i class='material-icons'>shopping_bag</i>" :active="request()->routeIs('admin.orders')">Orders</x-sidebar-item>
                         <x-sidebar-item href="{{ route('admin.users.index') }}" icon="<i class='material-icons'>group</i>" :active="request()->routeIs('admin.users.*')">User Management</x-sidebar-item>
                     @else
                         <x-sidebar-item href="{{ route('wallet.index') }}" icon="<i class='material-icons'>account_balance_wallet</i>" :active="request()->routeIs('wallet.*')">Wallet</x-sidebar-item>
@@ -152,22 +158,28 @@
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 p-4 lg:p-6 overflow-auto">
-                @if(session('success'))
-                    <div class="mb-4 p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 flex items-center gap-3">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        {{ session('success') }}
-                    </div>
-                @endif
+            <main class="flex-1 overflow-auto scrollbar-hide flex flex-col">
+                <div class="flex-1 p-4 lg:p-6">
+                    @if(session('success'))
+                        <div class="mb-4 p-4 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
-                @if(session('error'))
-                    <div class="mb-4 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 flex items-center gap-3">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        {{ session('error') }}
-                    </div>
-                @endif
+                    @if(session('error'))
+                        <div class="mb-4 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 flex items-center gap-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            {{ session('error') }}
+                        </div>
+                    @endif
 
-                {{ $slot }}
+                    {{ $slot }}
+                </div>
+
+                @if(isset($footer))
+                    {{ $footer }}
+                @endif
             </main>
         </div>
     </div>
