@@ -1,4 +1,14 @@
 *
 !.gitignore
+!covers/
+!covers/*
+!galleries/
+!galleries/*
+!gallery/
+!gallery/*
 !games/
 !games/*
+!launcher/
+!launcher/*
+!trailers/
+!trailers/*
