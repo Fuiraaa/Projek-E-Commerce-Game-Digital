@@ -22,7 +22,7 @@
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-10">
         <div class="mb-8 flex justify-center">
             <a href="/" class="flex items-center gap-3">
-                <img src="{{ asset('images/logo.png') }}" alt="Neboostla Logo" class="w-10 h-10 rounded-xl object-cover shadow-[0_0_20px_rgba(0,240,255,0.3)]">
+                <img src="{{ asset('images/logo.png') }}" alt="Neboostla Logo" class="w-12 h-12 drop-shadow-[0_0_10px_rgba(0,240,255,0.5)]">
                 <span class="font-heading font-bold text-xl text-white neon-text">Neboostla</span>
             </a>
         </div>
